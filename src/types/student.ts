@@ -1,6 +1,7 @@
 export interface InterviewRound {
   round: string; // L1, L2, L3, etc.
   score: number;
+  reviewer?: string;
   result: 'pass' | 'fail' | 'pending';
   notes?: string;
   date?: string;

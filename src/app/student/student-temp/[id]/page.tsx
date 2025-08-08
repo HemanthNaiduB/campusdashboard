@@ -9,30 +9,30 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useStudentUpdate } from '@/hooks/useStudentUpdate';
 import { 
-  XMarkIcon, ArrowLeftIcon, PlusIcon, TrashIcon, UserIcon, ChartBarIcon, 
-  BriefcaseIcon, Cog6ToothIcon, PhoneIcon, EnvelopeIcon, MapPinIcon,
-  AcademicCapIcon, StarIcon, ClockIcon, CalendarIcon, DocumentTextIcon,
-  PresentationChartLineIcon, TrophyIcon, CodeBracketIcon, BuildingOfficeIcon,
-  ClipboardDocumentListIcon, ChatBubbleLeftRightIcon, UserGroupIcon,
-  CheckCircleIcon, XCircleIcon, FireIcon, LightBulbIcon, CpuChipIcon, 
-  PuzzlePieceIcon, HeartIcon, BeakerIcon, ChatBubbleOvalLeftEllipsisIcon, 
-  MegaphoneIcon, PencilIcon
+  ArrowLeftIcon, PlusIcon, TrashIcon, UserIcon, ChartBarIcon, 
+  BriefcaseIcon, Cog6ToothIcon, PhoneIcon, EnvelopeIcon,
+  AcademicCapIcon, StarIcon, ClockIcon, DocumentTextIcon,
+  PresentationChartLineIcon, TrophyIcon, CodeBracketIcon,
+  ClipboardDocumentListIcon,
+  CheckCircleIcon, XCircleIcon,
+  PencilIcon
 } from '@heroicons/react/24/outline';
 
 
 
-interface EnhancedInterviewRound extends InterviewRound {
-  type?: string;
-  subType?: string;
-  detailedScoring?: {
-    technicalCompetency: number;
-    communicationSkills: number;
-    problemSolving: number;
-    culturalFit: number;
-  };
-  interviewer?: string;
-  duration?: number;
-}
+// Deprecated/unused advanced fields retained for future expansion
+// interface EnhancedInterviewRound extends InterviewRound {
+//   type?: string;
+//   subType?: string;
+//   detailedScoring?: {
+//     technicalCompetency: number;
+//     communicationSkills: number;
+//     problemSolving: number;
+//     culturalFit: number;
+//   };
+//   interviewer?: string;
+//   duration?: number;
+// }
 
 export default function StudentPage() {
   const router = useRouter();
@@ -57,16 +57,16 @@ export default function StudentPage() {
   const [selectedRoundName, setSelectedRoundName] = useState<string>('');
   
   // Enhanced Interview State
-  const [selectedRoundType, setSelectedRoundType] = useState<string>('technical');
-  const [selectedSubType, setSelectedSubType] = useState<string>('');
-  const [detailedScoring, setDetailedScoring] = useState({
-    technicalCompetency: 0,
-    communicationSkills: 0,
-    problemSolving: 0,
-    culturalFit: 0
-  });
-  const [interviewComments, setInterviewComments] = useState('');
-  const [showRoundDetails, setShowRoundDetails] = useState<number | null>(null);
+  // const [selectedRoundType, setSelectedRoundType] = useState<string>('technical');
+  // const [selectedSubType, setSelectedSubType] = useState<string>('');
+  // const [detailedScoring, setDetailedScoring] = useState({
+  //   technicalCompetency: 0,
+  //   communicationSkills: 0,
+  //   problemSolving: 0,
+  //   culturalFit: 0
+  // });
+  // const [interviewComments, setInterviewComments] = useState('');
+  // const [showRoundDetails, setShowRoundDetails] = useState<number | null>(null);
   
   const { updateHackerEarthScore, updateInterviewRounds, updateSelectionStatus } = useStudentUpdate();
 
@@ -130,7 +130,7 @@ export default function StudentPage() {
   const studentInitials = useMemo(() => {
     if (!student) return '';
     return student.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  }, [student?.name]);
+  }, [student]);
 
   const interviewStats = useMemo(() => ({
     total: interviewRounds.length,
@@ -139,58 +139,38 @@ export default function StudentPage() {
     pending: interviewRounds.filter(r => r.result === 'pending').length
   }), [interviewRounds]);
 
-  // Round Types & Templates (memoized for performance)
-  const roundTypes = useMemo(() => ({
-    technical: {
-      name: 'Technical Round',
-      icon: CpuChipIcon,
-      color: 'blue',
-      subTypes: [
-        { id: 'coding-live', name: 'Coding Assessment (Live)', icon: CodeBracketIcon },
-        { id: 'coding-takehome', name: 'Coding Assessment (Take-home)', icon: DocumentTextIcon },
-        { id: 'system-design', name: 'System Design Discussion', icon: PuzzlePieceIcon },
-        { id: 'technical-qa', name: 'Technical Knowledge Q&A', icon: LightBulbIcon },
-        { id: 'code-review', name: 'Code Review Session', icon: BeakerIcon },
-        { id: 'architecture', name: 'Architecture Discussion', icon: BuildingOfficeIcon }
-      ]
-    },
-    hr: {
-      name: 'HR Round',
-      icon: HeartIcon,
-      color: 'pink',
-      subTypes: [
-        { id: 'behavioral', name: 'Behavioral Questions', icon: ChatBubbleLeftRightIcon },
-        { id: 'cultural-fit', name: 'Cultural Fit Assessment', icon: HeartIcon },
-        { id: 'salary-benefits', name: 'Salary & Benefits Discussion', icon: TrophyIcon },
-        { id: 'background', name: 'Background Verification', icon: CheckCircleIcon },
-        { id: 'references', name: 'Reference Checks', icon: UserIcon }
-      ]
-    },
-    groupDiscussion: {
-      name: 'Group Discussion',
-      icon: UserGroupIcon,
-      color: 'green',
-      subTypes: [
-        { id: 'topic-assignment', name: 'Topic Assignment', icon: MegaphoneIcon },
-        { id: 'participation', name: 'Participation Tracking', icon: ChatBubbleOvalLeftEllipsisIcon },
-        { id: 'leadership', name: 'Leadership Assessment', icon: StarIcon },
-        { id: 'communication', name: 'Communication Evaluation', icon: ChatBubbleLeftRightIcon },
-        { id: 'team-dynamics', name: 'Team Dynamics Analysis', icon: UserGroupIcon }
-      ]
-    },
-    managerial: {
-      name: 'Managerial Round',
-      icon: TrophyIcon,
-      color: 'purple',
-      subTypes: [
-        { id: 'leadership-scenarios', name: 'Leadership Scenarios', icon: StarIcon },
-        { id: 'decision-making', name: 'Decision-making Cases', icon: LightBulbIcon },
-        { id: 'strategic-thinking', name: 'Strategic Thinking', icon: PresentationChartLineIcon },
-        { id: 'team-management', name: 'Team Management', icon: UserGroupIcon },
-        { id: 'vision-alignment', name: 'Vision Alignment', icon: FireIcon }
-      ]
+  // Group rounds by round name and compute reviewer list and average score
+  const groupedRounds = useMemo(() => {
+    const map = new Map<string, { items: { round: InterviewRound; index: number }[]; average: number; reviewers: string[]; overall: 'pass' | 'fail' | 'pending' }>();
+    interviewRounds.forEach((r, idx) => {
+      const key = r.round || 'Unknown';
+      const entry = map.get(key) || { items: [], average: 0, reviewers: [], overall: 'pending' };
+      entry.items.push({ round: r, index: idx });
+      const reviewerName = r.reviewer;
+      if (reviewerName && !entry.reviewers.includes(reviewerName)) {
+        entry.reviewers.push(reviewerName);
+      }
+      map.set(key, entry);
+    });
+    for (const entry of map.values()) {
+      entry.average = entry.items.length
+        ? Math.round(entry.items.reduce((sum, it) => sum + (it.round.score || 0), 0) / entry.items.length)
+        : 0;
+      // Overall result aggregation across reviewers in the group
+      const hasFail = entry.items.some(it => it.round.result === 'fail');
+      const hasPending = entry.items.some(it => it.round.result === 'pending');
+      const allPass = entry.items.length > 0 && entry.items.every(it => it.round.result === 'pass');
+      entry.overall = hasFail ? 'fail' : (hasPending ? 'pending' : (allPass ? 'pass' : 'pending'));
     }
-  }), []);
+    return map;
+  }, [interviewRounds]);
+
+  const [selectedReviewerByRound, setSelectedReviewerByRound] = useState<Record<string, string>>({});
+  const [viewRoundIndex, setViewRoundIndex] = useState<number | null>(null);
+
+  // Round Types (unused placeholder kept for future UX)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const roundTypes = useMemo(() => ({}), []);
 
   const handleSaveHackerEarth = useCallback(async () => {
     if (!student) return;
@@ -460,41 +440,18 @@ export default function StudentPage() {
           <div className="p-8 min-h-screen">
             {activeTab === 'interviews' && (
               <div className="space-y-8">
-                {/* Interview Progress Pipeline */}
-                <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-8 border border-indigo-100">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-3 bg-indigo-100 rounded-xl">
-                        <BriefcaseIcon className="h-6 w-6 text-indigo-600" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900">Interview Pipeline</h3>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-sm text-gray-600">Success Rate:</div>
-                      <div className="text-lg font-bold text-green-600">
-                        {interviewStats.total > 0 ? Math.round((interviewStats.passed / interviewStats.total) * 100) : 0}%
-                      </div>
-                    </div>
+                {/* Compact Interview Summary */}
+                <div className="bg-white rounded-2xl p-4 border border-gray-100 flex flex-wrap items-center gap-4 justify-between">
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <BriefcaseIcon className="h-5 w-5 text-indigo-600" />
+                    <span className="font-semibold">Interviews</span>
                   </div>
-                  
-                  {/* Pipeline Stepper - Simplified version from the modal */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="text-center p-6 bg-white rounded-xl shadow-lg border-l-4 border-indigo-500">
-                      <div className="text-3xl font-bold text-indigo-600 mb-2">{interviewStats.total}</div>
-                      <div className="text-sm font-medium text-gray-600">Total Rounds</div>
-                    </div>
-                    <div className="text-center p-6 bg-white rounded-xl shadow-lg border-l-4 border-green-500">
-                      <div className="text-3xl font-bold text-green-600 mb-2">{interviewStats.passed}</div>
-                      <div className="text-sm font-medium text-gray-600">Passed</div>
-                    </div>
-                    <div className="text-center p-6 bg-white rounded-xl shadow-lg border-l-4 border-red-500">
-                      <div className="text-3xl font-bold text-red-600 mb-2">{interviewStats.failed}</div>
-                      <div className="text-sm font-medium text-gray-600">Failed</div>
-                    </div>
-                    <div className="text-center p-6 bg-white rounded-xl shadow-lg border-l-4 border-yellow-500">
-                      <div className="text-3xl font-bold text-yellow-600 mb-2">{interviewStats.pending}</div>
-                      <div className="text-sm font-medium text-gray-600">Pending</div>
-                    </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <span className="px-2 py-1 rounded-md bg-gray-100">Total: <b>{interviewStats.total}</b></span>
+                    <span className="px-2 py-1 rounded-md bg-green-100 text-green-700">Pass: <b>{interviewStats.passed}</b></span>
+                    <span className="px-2 py-1 rounded-md bg-red-100 text-red-700">Fail: <b>{interviewStats.failed}</b></span>
+                    <span className="px-2 py-1 rounded-md bg-yellow-100 text-yellow-800">Pending: <b>{interviewStats.pending}</b></span>
+                    <span className="px-2 py-1 rounded-md bg-indigo-50 text-indigo-700">Success: <b>{interviewStats.total > 0 ? Math.round((interviewStats.passed / interviewStats.total) * 100) : 0}%</b></span>
                   </div>
                 </div>
 
@@ -507,158 +464,222 @@ export default function StudentPage() {
                     </div>
                     <button
                       onClick={() => setShowAddRound(true)}
-                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl group"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-all"
                     >
-                      <PlusIcon className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
+                      <PlusIcon className="h-4 w-4 mr-2" />
                       Schedule New Round
                     </button>
                   </div>
 
-                  {/* Rounds List - Simplified from modal */}
+                  {/* Rounds List - Grouped by round with reviewer filter and average */}
                   {interviewRounds.length > 0 ? (
-                    <div className="space-y-4">
-                      {interviewRounds.map((round, index) => (
-                        <div key={index} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                          {editingRound === index ? (
-                            // Edit mode
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-6">
+                      {[...groupedRounds.keys()].map((group) => {
+                        const groupData = groupedRounds.get(group)!;
+                        const reviewers = groupData.reviewers;
+                        const reviewerFilter = selectedReviewerByRound[group] || '';
+                        const items = reviewerFilter
+                          ? groupData.items.filter(it => (it.round.reviewer || '') === reviewerFilter)
+                          : groupData.items;
+                        return (
+                          <div key={group} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-3">
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">Round Name</label>
-                                  <select
-                                    value={round.round}
-                                    onChange={(e) => setInterviewRounds(prev => 
-                                      prev.map((r, i) => i === index ? { ...r, round: e.target.value } : r)
-                                    )}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  >
-                                    <option value="">Select Round</option>
-                                    {interviewRoundOptions.map((option) => (
-                                      <option key={option} value={option}>{option}</option>
-                                    ))}
-                                  </select>
+                                  <h4 className="font-semibold text-gray-900">{group}</h4>
+                                  <div className="text-sm text-gray-600">Average score: {groupData.average}/100</div>
                                 </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">Score</label>
-                                  <input
-                                    type="number"
-                                    min="0"
-                                    max="100"
-                                    value={round.score}
-                                    onChange={(e) => setInterviewRounds(prev => 
-                                      prev.map((r, i) => i === index ? { ...r, score: parseInt(e.target.value) || 0 } : r)
-                                    )}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  />
-                                </div>
+                                <span className={`${
+                                  groupData.overall === 'pass' ? 'bg-green-100 text-green-800' :
+                                  groupData.overall === 'fail' ? 'bg-red-100 text-red-800' :
+                                  'bg-yellow-100 text-yellow-800'
+                                } px-2 py-1 rounded text-xs font-medium`}>
+                                  Overall: {groupData.overall.toUpperCase()}
+                                </span>
                               </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">Result</label>
-                                  <select
-                                    value={round.result}
-                                    onChange={(e) => setInterviewRounds(prev => 
-                                      prev.map((r, i) => i === index ? { ...r, result: e.target.value as 'pass' | 'fail' | 'pending' } : r)
-                                    )}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  >
-                                    <option value="pending">Pending</option>
-                                    <option value="pass">Pass</option>
-                                    <option value="fail">Fail</option>
-                                  </select>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                                  <input
-                                    type="date"
-                                    value={round.date || new Date().toISOString().split('T')[0]}
-                                    onChange={(e) => setInterviewRounds(prev => 
-                                      prev.map((r, i) => i === index ? { ...r, date: e.target.value } : r)
-                                    )}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                                <textarea
-                                  value={round.notes || ''}
-                                  onChange={(e) => setInterviewRounds(prev => 
-                                    prev.map((r, i) => i === index ? { ...r, notes: e.target.value } : r)
-                                  )}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  rows={3}
-                                />
-                              </div>
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => handleEditRound(index, round)}
-                                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                              <div className="flex items-center gap-2">
+                                <label className="text-sm text-gray-700">Reviewer:</label>
+                                <select
+                                  value={reviewerFilter}
+                                  onChange={(e) => setSelectedReviewerByRound(prev => ({ ...prev, [group]: e.target.value }))}
+                                  className="px-2 py-1 border border-gray-300 rounded-md text-sm"
                                 >
-                                  Save Changes
-                                </button>
-                                <button
-                                  onClick={() => setEditingRound(null)}
-                                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                                >
-                                  Cancel
-                                </button>
+                                  <option value="">All</option>
+                                  {reviewers.map((r) => (
+                                    <option key={r} value={r}>{r}</option>
+                                  ))}
+                                </select>
                               </div>
                             </div>
-                          ) : (
-                            // View mode
-                            <>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold ${
-                                    round.result === 'pass' ? 'bg-green-500' :
-                                    round.result === 'fail' ? 'bg-red-500' :
-                                    'bg-yellow-500'
-                                  }`}>
-                                    {round.result === 'pass' ? <CheckCircleIcon className="h-5 w-5" /> :
-                                     round.result === 'fail' ? <XCircleIcon className="h-5 w-5" /> :
-                                     <ClockIcon className="h-5 w-5" />}
-                                  </div>
-                                  <div>
-                                    <h4 className="font-semibold text-gray-900">{round.round}</h4>
-                                    <div className="text-sm text-gray-600">
-                                      Score: {round.score}/100 • {new Date(round.date || new Date()).toLocaleDateString()}
+                            <div className="space-y-3">
+                              {items.map(({ round, index }) => (
+                                <div key={index} className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-sm transition-shadow">
+                                  {editingRound === index ? (
+                                    <div className="space-y-4">
+                                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                          <label className="block text-sm font-medium text-gray-700 mb-2">Round Name</label>
+                                          <select
+                                            value={round.round}
+                                            onChange={(e) => setInterviewRounds(prev => 
+                                              prev.map((r, i) => i === index ? { ...r, round: e.target.value } : r)
+                                            )}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          >
+                                            <option value="">Select Round</option>
+                                            {interviewRoundOptions.map((option) => (
+                                              <option key={option} value={option}>{option}</option>
+                                            ))}
+                                          </select>
+                                        </div>
+                                        <div>
+                                          <label className="block text-sm font-medium text-gray-700 mb-2">Score</label>
+                                          <input
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            value={round.score}
+                                            onChange={(e) => setInterviewRounds(prev => 
+                                              prev.map((r, i) => i === index ? { ...r, score: parseInt(e.target.value) || 0 } : r)
+                                            )}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="block text-sm font-medium text-gray-700 mb-2">Reviewer</label>
+                                          <input
+                                            type="text"
+                                            placeholder="e.g. Priya, Rahul"
+                                            value={round.reviewer || ''}
+                                            onChange={(e) => setInterviewRounds(prev => 
+                                              prev.map((r, i) => i === index ? { ...r, reviewer: e.target.value } : r)
+                                            )}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                          <label className="block text-sm font-medium text-gray-700 mb-2">Result</label>
+                                          <select
+                                            value={round.result}
+                                            onChange={(e) => setInterviewRounds(prev => 
+                                              prev.map((r, i) => i === index ? { ...r, result: e.target.value as 'pass' | 'fail' | 'pending' } : r)
+                                            )}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          >
+                                            <option value="pending">Pending</option>
+                                            <option value="pass">Pass</option>
+                                            <option value="fail">Fail</option>
+                                          </select>
+                                        </div>
+                                        <div>
+                                          <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                                          <input
+                                            type="date"
+                                            value={round.date || new Date().toISOString().split('T')[0]}
+                                            onChange={(e) => setInterviewRounds(prev => 
+                                              prev.map((r, i) => i === index ? { ...r, date: e.target.value } : r)
+                                            )}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          />
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                                        <textarea
+                                          value={round.notes || ''}
+                                          onChange={(e) => setInterviewRounds(prev => 
+                                            prev.map((r, i) => i === index ? { ...r, notes: e.target.value } : r)
+                                          )}
+                                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          rows={3}
+                                        />
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <button
+                                          onClick={() => handleEditRound(index, round)}
+                                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                                        >
+                                          Save Changes
+                                        </button>
+                                        <button
+                                          onClick={() => setEditingRound(null)}
+                                          className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                                        >
+                                          Cancel
+                                        </button>
+                                      </div>
                                     </div>
-                                  </div>
+                                  ) : (
+                                    <>
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-3">
+                                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold ${
+                                            round.result === 'pass' ? 'bg-green-500' :
+                                            round.result === 'fail' ? 'bg-red-500' :
+                                            'bg-yellow-500'
+                                          }`}>
+                                            {round.result === 'pass' ? <CheckCircleIcon className="h-5 w-5" /> :
+                                             round.result === 'fail' ? <XCircleIcon className="h-5 w-5" /> :
+                                             <ClockIcon className="h-5 w-5" />}
+                                          </div>
+                                          <div>
+                                            <h4 className="font-semibold text-gray-900">{round.round}</h4>
+                                            <div className="text-sm text-gray-600">
+                                              Score: {round.score}/100 • {new Date(round.date || new Date()).toLocaleDateString()}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      <div className="flex items-center space-x-2">
+                                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                            round.result === 'pass' ? 'bg-green-100 text-green-800' :
+                                            round.result === 'fail' ? 'bg-red-100 text-red-800' :
+                                            'bg-yellow-100 text-yellow-800'
+                                          }`}>
+                                            {round.result.toUpperCase()}
+                                          </span>
+                                          {round.reviewer && (
+                                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800" title="Reviewer">
+                                              {round.reviewer}
+                                            </span>
+                                          )}
+                                          <button
+                                            onClick={() => setViewRoundIndex(index)}
+                                            className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200"
+                                            title="View details"
+                                          >
+                                            View
+                                          </button>
+                                          <button
+                                            onClick={() => setEditingRound(index)}
+                                            className="p-1 text-blue-500 hover:text-blue-700"
+                                            title="Edit Round"
+                                          >
+                                            <PencilIcon className="h-4 w-4" />
+                                          </button>
+                                          <button
+                                            onClick={() => handleDeleteRound(index)}
+                                            className="p-1 text-red-500 hover:text-red-700"
+                                            title="Delete Round"
+                                          >
+                                            <TrashIcon className="h-4 w-4" />
+                                          </button>
+                                        </div>
+                                      </div>
+                                      {round.notes && (
+                                        <div className="mt-3 p-3 bg-white rounded-lg border-l-4 border-blue-400">
+                                          <p className="text-sm text-gray-600">{round.notes}</p>
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                    round.result === 'pass' ? 'bg-green-100 text-green-800' :
-                                    round.result === 'fail' ? 'bg-red-100 text-red-800' :
-                                    'bg-yellow-100 text-yellow-800'
-                                  }`}>
-                                    {round.result.toUpperCase()}
-                                  </span>
-                                  <button
-                                    onClick={() => setEditingRound(index)}
-                                    className="p-1 text-blue-500 hover:text-blue-700"
-                                    title="Edit Round"
-                                  >
-                                    <PencilIcon className="h-4 w-4" />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteRound(index)}
-                                    className="p-1 text-red-500 hover:text-red-700"
-                                    title="Delete Round"
-                                  >
-                                    <TrashIcon className="h-4 w-4" />
-                                  </button>
-                                </div>
-                              </div>
-                              {round.notes && (
-                                <div className="mt-3 p-3 bg-white rounded-lg border-l-4 border-blue-400">
-                                  <p className="text-sm text-gray-600">{round.notes}</p>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      ))}
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className="text-center py-12">
@@ -667,101 +688,153 @@ export default function StudentPage() {
                       <p className="text-gray-500 mb-4">Start the interview process by scheduling the first round</p>
                       <button
                         onClick={() => setShowAddRound(true)}
-                        className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 font-medium transition-colors"
+                        className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors"
                       >
                         Schedule First Round
                       </button>
                     </div>
                   )}
 
-                  {/* Simplified Add Round Form */}
+                  {/* View Round Modal */}
+                  {viewRoundIndex !== null && interviewRounds[viewRoundIndex] && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                      <div className="absolute inset-0 bg-black/40" onClick={() => setViewRoundIndex(null)} />
+                      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[85vh] overflow-auto p-6">
+                        {(() => {
+                          const r = interviewRounds[viewRoundIndex!];
+                          return (
+                            <div>
+                              <div className="flex items-center justify-between mb-4">
+                                <h4 className="text-lg font-semibold text-gray-900">{r.round} — Details</h4>
+                                <button onClick={() => setViewRoundIndex(null)} className="text-gray-500 hover:text-gray-700">✕</button>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 text-sm">
+                                <div className="p-3 rounded bg-gray-50">
+                                  <div className="text-gray-500">Score</div>
+                                  <div className="text-gray-900 font-semibold">{r.score}/100</div>
+                                </div>
+                                <div className="p-3 rounded bg-gray-50">
+                                  <div className="text-gray-500">Result</div>
+                                  <div className="text-gray-900 font-semibold capitalize">{r.result}</div>
+                                </div>
+                                <div className="p-3 rounded bg-gray-50">
+                                  <div className="text-gray-500">Reviewer</div>
+                                  <div className="text-gray-900 font-semibold">{r.reviewer || '—'}</div>
+                                </div>
+                                <div className="p-3 rounded bg-gray-50">
+                                  <div className="text-gray-500">Date</div>
+                                  <div className="text-gray-900 font-semibold">{new Date(r.date || new Date()).toLocaleDateString()}</div>
+                                </div>
+                              </div>
+                              {r.notes && (
+                                <div className="border rounded-lg p-3 bg-gray-50 text-sm">
+                                  <div className="text-gray-500 mb-1">Feedback</div>
+                                  <div className="text-gray-800 whitespace-pre-wrap">{r.notes}</div>
+                                </div>
+                              )}
+                              <div className="mt-4 flex justify-end">
+                                <button onClick={() => setViewRoundIndex(null)} className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 text-sm">Close</button>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  )}
+                  {/* Add Round Modal */}
                   {showAddRound && (
-                    <div className="mt-6 p-6 bg-blue-50 rounded-xl border border-blue-200">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Add New Interview Round</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Round Name</label>
-                          <select
-                            value={selectedRoundName}
-                            onChange={(e) => setSelectedRoundName(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option value="">Select Round Type</option>
-                            {interviewRoundOptions.map((option) => (
-                              <option key={option} value={option}>{option}</option>
-                            ))}
-                          </select>
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                      <div className="absolute inset-0 bg-black/40" onClick={() => setShowAddRound(false)} />
+                      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[85vh] overflow-auto p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="text-lg font-semibold text-gray-900">Schedule Interview Round</h4>
+                          <button onClick={() => setShowAddRound(false)} className="text-gray-500 hover:text-gray-700">✕</button>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Score (0-100)</label>
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            placeholder="Score"
-                            value={newRound.score}
-                            onChange={(e) => setNewRound({ ...newRound, score: parseInt(e.target.value) || 0 })}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Round Name</label>
+                            <select
+                              value={selectedRoundName}
+                              onChange={(e) => setSelectedRoundName(e.target.value)}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="">Select Round Type</option>
+                              {interviewRoundOptions.map((option) => (
+                                <option key={option} value={option}>{option}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Score (0-100)</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              placeholder="Score"
+                              value={newRound.score}
+                              onChange={(e) => setNewRound({ ...newRound, score: parseInt(e.target.value) || 0 })}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Reviewer</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Priya, Rahul"
+                              value={newRound.reviewer || ''}
+                              onChange={(e) => setNewRound({ ...newRound, reviewer: e.target.value })}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Result</label>
+                            <select
+                              value={newRound.result}
+                              onChange={(e) => setNewRound({ ...newRound, result: e.target.value as 'pass' | 'fail' | 'pending' })}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="pass">Pass</option>
+                              <option value="fail">Fail</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                            <input
+                              type="date"
+                              value={newRound.date}
+                              onChange={(e) => setNewRound({ ...newRound, date: e.target.value })}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                          <textarea
+                            placeholder="Interview notes and feedback..."
+                            value={newRound.notes}
+                            onChange={(e) => setNewRound({ ...newRound, notes: e.target.value })}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            rows={3}
                           />
                         </div>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Result</label>
-                          <select
-                            value={newRound.result}
-                            onChange={(e) => setNewRound({ ...newRound, result: e.target.value as 'pass' | 'fail' | 'pending' })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => setShowAddRound(false)}
+                            className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200"
                           >
-                            <option value="pending">Pending</option>
-                            <option value="pass">Pass</option>
-                            <option value="fail">Fail</option>
-                          </select>
+                            Close
+                          </button>
+                          <button
+                            onClick={handleAddInterviewRound}
+                            disabled={!selectedRoundName.trim()}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                          >
+                            Save Round
+                          </button>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                          <input
-                            type="date"
-                            value={newRound.date}
-                            onChange={(e) => setNewRound({ ...newRound, date: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                        <textarea
-                          placeholder="Interview notes and feedback..."
-                          value={newRound.notes}
-                          onChange={(e) => setNewRound({ ...newRound, notes: e.target.value })}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          rows={3}
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={handleAddInterviewRound}
-                          disabled={!selectedRoundName.trim()}
-                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                        >
-                          Save Round
-                        </button>
-                        <button
-                          onClick={() => {
-                            setShowAddRound(false);
-                            setSelectedRoundName('');
-                            setNewRound({
-                              round: '',
-                              score: 0,
-                              result: 'pending',
-                              notes: '',
-                              date: new Date().toISOString().split('T')[0],
-                            });
-                          }}
-                          className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                        >
-                          Cancel
-                        </button>
                       </div>
                     </div>
                   )}
