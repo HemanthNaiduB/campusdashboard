@@ -242,9 +242,9 @@ export default function StudentPage({ initialStudent = null, onClose }: StudentP
   const Content = (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50">
           {/* Header */}
-          <div className="bg-gradient-to-r from-white via-blue-50/30 to-indigo-50/30 border-b border-gray-200 px-6 py-6">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-4">
+          <div className="bg-gradient-to-r from-white via-blue-50/30 to-indigo-50/30 border-b border-gray-200 px-4 sm:px-6 py-4 sm:py-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 <button
                   onClick={() => {
                     sessionStorage.removeItem('currentStudent');
@@ -256,31 +256,31 @@ export default function StudentPage({ initialStudent = null, onClose }: StudentP
                   <ArrowLeftIcon className="h-5 w-5" />
                 </button>
                 <div className="relative">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-lg sm:text-xl font-bold shadow-lg">
                     {studentInitials}
                   </div>
-                  <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white ${
+                  <div className={`absolute -bottom-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-white ${
                     (student.selection_status || 'pending') === 'selected' ? 'bg-green-500' :
                     (student.selection_status || 'pending') === 'rejected' ? 'bg-red-500' :
                     'bg-yellow-500'
                   }`} />
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{student.name}</h1>
-                  <div className="flex items-center space-x-6 text-sm text-gray-600 mt-1">
-                    <span>{student.email}</span>
-                    <span>{student.college_name}</span>
+                <div className="min-w-0">
+                  <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate max-w-[60vw] sm:max-w-none">{student.name}</h1>
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-6 text-[12px] sm:text-sm text-gray-600 mt-1">
+                    <span className="truncate max-w-[60vw] sm:max-w-none">{student.email}</span>
+                    <span className="hidden xs:inline">{student.college_name}</span>
                     <span>CGPA: {student.cgpa || 'N/A'}</span>
                   </div>
                 </div>
-                <div className={`px-4 py-2 rounded-full text-sm font-bold ${
+                <div className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold ${
                   (student.selection_status || 'pending') === 'selected' ? 'bg-green-100 text-green-800' :
                   (student.selection_status || 'pending') === 'rejected' ? 'bg-red-100 text-red-800' :
                   'bg-yellow-100 text-yellow-800'
                 }`}>
                   {(student.selection_status || 'pending').toUpperCase()}
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                   <div className="flex items-center space-x-1">
                     <StarIcon className="h-4 w-4 text-yellow-500" />
                     <span className="text-sm font-medium text-gray-700">{student.github_score || student.github_overall_score || 0}</span>
@@ -295,7 +295,7 @@ export default function StudentPage({ initialStudent = null, onClose }: StudentP
                   </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <a href={student.resume_url} target="_blank" rel="noopener noreferrer" className="p-3 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-all duration-200" title="Resume">
                   <DocumentTextIcon className="h-5 w-5" />
                 </a>
@@ -315,27 +315,27 @@ export default function StudentPage({ initialStudent = null, onClose }: StudentP
                       }
                     } catch {}
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-800 border border-gray-300 shadow-sm transition-all"
+                  className="inline-flex items-center gap-2 px-2 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-800 border border-gray-300 shadow-sm transition-all"
                   title="Refresh"
                 >
                   <ArrowPathIcon className="h-4 w-4" />
-                  <span className="text-sm font-semibold">Refresh</span>
+                  <span className="hidden sm:inline text-sm font-semibold">Refresh</span>
                 </button>
               </div>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="bg-gradient-to-r from-gray-50 to-blue-50/50 border-b border-gray-200 px-6">
-            <nav className="flex space-x-6">
+          <div className="bg-gradient-to-r from-gray-50 to-blue-50/50 border-b border-gray-200 px-2 sm:px-6">
+            <nav className="flex space-x-2 sm:space-x-6 overflow-x-auto">
               {tabs.map((tab) => {
                 const Icon = tab.icon; const isActive = activeTab === tab.id;
                 return (
-                  <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`relative flex items-center space-x-3 py-4 px-4 font-semibold text-sm transition-all duration-300 rounded-t-xl ${isActive ? 'bg-white text-blue-600 shadow-lg transform -translate-y-1' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}>
-                    <div className={`p-2 rounded-lg transition-all duration-200 ${isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
-                      <Icon className="h-5 w-5" />
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`relative flex items-center space-x-2 sm:space-x-3 py-3 sm:py-4 px-3 sm:px-4 font-semibold text-sm transition-all duration-300 rounded-t-xl ${isActive ? 'bg-white text-blue-600 shadow-lg sm:-translate-y-1' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}>
+                    <div className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                     </div>
-                    <span className="font-medium">{tab.name}</span>
+                    <span className="font-medium whitespace-nowrap">{tab.name}</span>
                     {isActive && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-blue-500 rounded-t-full" />}
                     {tab.id === 'interviews' && interviewStats.total > 0 && (
                       <span className="ml-1 px-2 py-0.5 bg-blue-100 text-blue-600 text-xs font-bold rounded-full">{interviewStats.total}</span>
@@ -347,7 +347,7 @@ export default function StudentPage({ initialStudent = null, onClose }: StudentP
           </div>
 
           {/* Content */}
-          <div className="p-8 min-h-screen">
+          <div className="p-4 sm:p-8 min-h-screen">
             {activeTab === 'interviews' && (
               <div className="space-y-8">
                 <div className="bg-white rounded-2xl p-4 border border-gray-100 flex flex-wrap items-center gap-4 justify-between">
