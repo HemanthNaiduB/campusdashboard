@@ -14,6 +14,8 @@ export interface Student {
   email: string;
   phone: string;
   college_name: string;
+  college_short_name?: string | null;
+  college_type?: string | null;
   branch: string | null;
   selection_status: 'selected' | 'rejected' | 'pending' | null;
   cgpa: number | null;
@@ -23,19 +25,40 @@ export interface Student {
   skills: string[];
   resume_url: string;
   github_url: string;
+  github_username?: string | null;
+  github_exists?: number | boolean | null;
   code_quality_score: number;
   followers: number;
   public_repos: number;
   commit_frequency: number | string;
+  total_commits?: number | null;
+  total_stars?: number | null;
+  primary_language?: string | null;
+  last_push_date?: string | null;
   created_at?: string;
   updated_at?: string;
   // Interview rounds
   interview_rounds?: InterviewRound[];
   // Additional fields from your data structure
+  gender?: string | null;
+  date_of_birth?: string | null;
+  home_town?: string | null;
+  languages_known?: string[] | string | null;
+  year_of_passing?: number | string | null;
+  roll_number?: string | null;
+  course?: string | null;
+  tenth_percentage?: number | string | null;
+  twelfth_percentage?: number | string | null;
   basic_info?: string;
   github_context?: string;
   executive_summary?: string;
   notable_projects?: string;
+  academic_context?: string | null;
+  cv_context?: string | null;
+  full_context?: string | null;
+  hackerearth_percentile?: string | null;
+  problems_solved?: number | null;
+  tags?: string[] | null;
 }
 
 export interface StudentFilters {

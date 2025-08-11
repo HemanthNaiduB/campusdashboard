@@ -347,7 +347,7 @@ export default function StudentPage({ initialStudent = null, onClose }: StudentP
           </div>
 
           {/* Content */}
-          <div className="p-4 sm:p-8 min-h-screen">
+          <div className="p-4 sm:p-6 min-h-screen">
             {activeTab === 'interviews' && (
               <div className="space-y-8">
                 <div className="bg-white rounded-2xl p-4 border border-gray-100 flex flex-wrap items-center gap-4 justify-between">
@@ -562,54 +562,52 @@ export default function StudentPage({ initialStudent = null, onClose }: StudentP
             )}
 
             {activeTab === 'overview' && (
-              <div className="space-y-8">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-100">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-3">
                       <div className="p-3 bg-blue-100 rounded-xl"><AcademicCapIcon className="h-6 w-6 text-blue-600" /></div>
                       <h3 className="text-2xl font-bold text-gray-900">Academic Information</h3>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-500">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white rounded-xl p-5 shadow border-l-4 border-blue-500">
                       <div className="flex items-center justify-between mb-3"><h4 className="font-semibold text-gray-700">CGPA</h4><div className="text-2xl font-bold text-blue-600">{student.cgpa || 'N/A'}</div></div>
                       <div className="w-full bg-gray-200 rounded-full h-2"><div className="bg-blue-500 h-2 rounded-full" style={{ width: `${Math.min((parseFloat(String(student.cgpa || '0')) / 10) * 100, 100)}%` }} /></div>
                     </div>
-                    <div className="bg-white rounded-xl p-6 shadow-lg"><h4 className="font-semibold text-gray-700 mb-2">College</h4><p className="text-gray-900 font-medium">{student.college_name}</p><p className="text-gray-600 text-sm mt-1">Branch: {student.branch}</p></div>
-                    <div className="bg-white rounded-xl p-6 shadow-lg"><h4 className="font-semibold text-gray-700 mb-2">Branch</h4><p className="text-gray-900 font-medium">{student.branch || 'Not specified'}</p><p className="text-gray-600 text-sm mt-1">Academic Branch</p></div>
+                    <div className="bg-white rounded-xl p-5 shadow">
+                      <h4 className="font-semibold text-gray-700 mb-2">College</h4>
+                      <p className="text-gray-900 font-medium">{student.college_name}</p>
+                      <p className="text-gray-600 text-sm mt-1">{student.college_short_name || student.college_type}</p>
+                      <p className="text-gray-600 text-sm mt-1">Course: {student.course || '—'}</p>
+                      <p className="text-gray-600 text-sm mt-1">YOP: {student.year_of_passing || '—'}</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-5 shadow">
+                      <h4 className="font-semibold text-gray-700 mb-2">Branch</h4>
+                      <p className="text-gray-900 font-medium">{student.branch || 'Not specified'}</p>
+                      <p className="text-gray-600 text-sm mt-1">Roll No: {student.roll_number || '—'}</p>
+                    </div>
                   </div>
                 </div>
+                {/* Keep overview lean: no technical blocks here */}
 
-                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                  <div className="flex items-center space-x-3 mb-6"><div className="p-3 bg-green-100 rounded-xl"><CodeBracketIcon className="h-6 w-6 text-green-600" /></div><h3 className="text-xl font-bold text-gray-900">Technical Skills</h3></div>
-                  {student.skills && student.skills.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">{student.skills.map((skill, index) => (<span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">{skill}</span>))}</div>
-                  ) : (<p className="text-gray-500 italic">No skills listed</p>)}
-                </div>
-
-                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                  <div className="flex items-center justify-between mb-6"><div className="flex items-center space-x-3"><div className="p-3 bg-purple-100 rounded-xl"><ChartBarIcon className="h-6 w-6 text-purple-600" /></div><h3 className="text-xl font-bold text-gray-900">Performance Scores</h3></div></div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-gray-50 rounded-xl p-6"><div className="flex items-center justify-between mb-3"><h4 className="font-semibold text-gray-700">GitHub Score</h4><div className="text-xl font-bold text-gray-800">{student.github_score || student.github_overall_score || 0}/100</div></div><div className="w-full bg-gray-200 rounded-full h-3"><div className="bg-gray-600 h-3 rounded-full" style={{ width: `${student.github_score || student.github_overall_score || 0}%` }} /></div></div>
-                    <div className="bg-orange-50 rounded-xl p-6"><div className="flex items-center justify-between mb-3"><h4 className="font-semibold text-gray-700">HackerEarth Score</h4><div className="flex items-center space-x-2">{editingHackerEarth ? (<><input type="number" min="0" max="100" value={hackerEarthScore} onChange={(e) => setHackerEarthScore(parseInt(e.target.value) || 0)} className="w-16 px-2 py-1 text-sm border border-gray-300 rounded" /><button onClick={handleSaveHackerEarth} className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">Save</button><button onClick={() => { setEditingHackerEarth(false); setHackerEarthScore(student.hackerearth_score || 0); }} className="px-2 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">Cancel</button></>) : (<><div className="text-xl font-bold text-orange-600">{hackerEarthScore}/100</div><button onClick={() => setEditingHackerEarth(true)} className="p-1 text-orange-600 hover:text-orange-800" title="Edit Score"><PencilIcon className="h-4 w-4" /></button></>)}</div></div><div className="w-full bg-orange-200 rounded-full h-3"><div className="bg-orange-500 h-3 rounded-full" style={{ width: `${hackerEarthScore}%` }} /></div></div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                  <div className="flex items-center space-x-3 mb-6"><div className="p-3 bg-indigo-100 rounded-xl"><PhoneIcon className="h-6 w-6 text-indigo-600" /></div><h3 className="text-xl font-bold text-gray-900">Contact Information</h3></div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-2xl p-5 shadow border border-gray-100">
+                  <div className="flex items-center space-x-3 mb-6"><div className="p-3 bg-indigo-100 rounded-xl"><PhoneIcon className="h-6 w-6 text-indigo-600" /></div><h3 className="text-xl font-bold text-gray-900">Contact & Personal</h3></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center space-x-3"><EnvelopeIcon className="h-5 w-5 text-gray-500" /><div><p className="text-sm text-gray-500">Email</p><p className="font-medium">{student.email}</p></div></div>
                     <div className="flex items-center space-x-3"><PhoneIcon className="h-5 w-5 text-gray-500" /><div><p className="text-sm text-gray-500">Phone</p><p className="font-medium">{student.phone || 'Not provided'}</p></div></div>
+                    <div className="flex items-center space-x-3"><AcademicCapIcon className="h-5 w-5 text-gray-500" /><div><p className="text-sm text-gray-500">Gender</p><p className="font-medium">{student.gender || '—'}</p></div></div>
+                    <div className="flex items-center space-x-3"><AcademicCapIcon className="h-5 w-5 text-gray-500" /><div><p className="text-sm text-gray-500">DOB</p><p className="font-medium">{student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString() : '—'}</p></div></div>
                   </div>
                 </div>
               </div>
             )}
 
             {activeTab === 'performance' && (
-              <div className="space-y-8">
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
-                  <div className="flex items-center justify-between mb-6"><div className="flex items-center space-x-3"><div className="p-3 bg-purple-100 rounded-xl"><PresentationChartLineIcon className="h-6 w-6 text-purple-600" /></div><h3 className="text-2xl font-bold text-gray-900">Performance Dashboard</h3></div></div>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-5 border border-purple-100">
+                  <div className="flex items-center justify-between mb-4"><div className="flex items-center space-x-3"><div className="p-3 bg-purple-100 rounded-xl"><PresentationChartLineIcon className="h-6 w-6 text-purple-600" /></div><h3 className="text-2xl font-bold text-gray-900">Performance Dashboard</h3></div></div>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="bg-white rounded-xl p-6 text-center shadow-lg"><div className="text-3xl font-bold text-blue-600 mb-2">{Math.round(((student.github_score || student.github_overall_score || 0) + (student.hackerearth_score || 0)) / 2)}</div><div className="text-sm font-medium text-gray-600">Overall Score</div></div>
                     <div className="bg-white rounded-xl p-6 text-center shadow-lg"><div className="text-3xl font-bold text-green-600 mb-2">{student.github_score || student.github_overall_score || 0}</div><div className="text-sm font-medium text-gray-600">GitHub Score</div></div>
                     <div className="bg-white rounded-xl p-6 text-center shadow-lg"><div className="text-3xl font-bold text-orange-600 mb-2">{student.hackerearth_score || 0}</div><div className="text-sm font-medium text-gray-600">HackerEarth</div></div>
@@ -617,8 +615,38 @@ export default function StudentPage({ initialStudent = null, onClose }: StudentP
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                  <h3 className="text-xl font-bold text-gray-900 mb-6">Detailed Performance Analysis</h3>
+                {/* Technical Profile moved here */}
+                <div className="bg-white rounded-2xl p-5 shadow border border-gray-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-3 bg-green-100 rounded-xl"><CodeBracketIcon className="h-6 w-6 text-green-600" /></div>
+                      <h3 className="text-xl font-bold text-gray-900">Technical Profile</h3>
+                    </div>
+                    {student.primary_language && (
+                      <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm">Primary: {student.primary_language}</span>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                    <div className="bg-gray-50 rounded-lg p-4"><div className="text-xs text-gray-500">Public Repos</div><div className="text-lg font-semibold text-gray-900">{student.public_repos}</div></div>
+                    <div className="bg-gray-50 rounded-lg p-4"><div className="text-xs text-gray-500">Followers</div><div className="text-lg font-semibold text-gray-900">{student.followers}</div></div>
+                    <div className="bg-gray-50 rounded-lg p-4"><div className="text-xs text-gray-500">Commits</div><div className="text-lg font-semibold text-gray-900">{student.total_commits ?? '—'}</div></div>
+                  </div>
+                  {student.skills && student.skills.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">{student.skills.map((skill, index) => (<span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">{skill}</span>))}</div>
+                  ) : (<p className="text-gray-500 italic">No skills listed</p>)}
+                </div>
+
+                {/* Scores block moved here */}
+                <div className="bg-white rounded-2xl p-5 shadow border border-gray-100">
+                  <div className="flex items-center space-x-3 mb-4"><div className="p-3 bg-purple-100 rounded-xl"><ChartBarIcon className="h-6 w-6 text-purple-600" /></div><h3 className="text-xl font-bold text-gray-900">Scores</h3></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 rounded-xl p-5"><div className="flex items-center justify-between mb-3"><h4 className="font-semibold text-gray-700">GitHub Score</h4><div className="text-xl font-bold text-gray-800">{student.github_score || student.github_overall_score || 0}/100</div></div><div className="w-full bg-gray-200 rounded-full h-3"><div className="bg-gray-600 h-3 rounded-full" style={{ width: `${student.github_score || student.github_overall_score || 0}%` }} /></div></div>
+                    <div className="bg-orange-50 rounded-xl p-5"><div className="flex items-center justify-between mb-3"><h4 className="font-semibold text-gray-700">HackerEarth Score</h4><div className="flex items-center space-x-2">{editingHackerEarth ? (<><input type="number" min="0" max="100" value={hackerEarthScore} onChange={(e) => setHackerEarthScore(parseInt(e.target.value) || 0)} className="w-16 px-2 py-1 text-sm border border-gray-300 rounded" /><button onClick={handleSaveHackerEarth} className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">Save</button><button onClick={() => { setEditingHackerEarth(false); setHackerEarthScore(student.hackerearth_score || 0); }} className="px-2 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">Cancel</button></>) : (<><div className="text-xl font-bold text-orange-600">{hackerEarthScore}/100</div><button onClick={() => setEditingHackerEarth(true)} className="p-1 text-orange-600 hover:text-orange-800" title="Edit Score"><PencilIcon className="h-4 w-4" /></button></>)}</div></div><div className="w-full bg-orange-200 rounded-full h-3"><div className="bg-orange-500 h-3 rounded-full" style={{ width: `${hackerEarthScore}%` }} /></div></div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 shadow border border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Detailed Performance Analysis</h3>
                   <div className="space-y-6">
                     <div className="border-l-4 border-gray-500 pl-6"><h4 className="font-semibold text-gray-800 mb-2">GitHub Performance</h4><div className="flex items-center space-x-4"><div className="flex-1"><div className="flex justify-between text-sm mb-1"><span>Repository Quality</span><span>{student.github_score || student.github_overall_score || 0}%</span></div><div className="w-full bg-gray-200 rounded-full h-2"><div className="bg-gray-600 h-2 rounded-full" style={{ width: `${student.github_score || student.github_overall_score || 0}%` }} /></div></div></div></div>
                     <div className="border-l-4 border-orange-500 pl-6"><h4 className="font-semibold text-gray-800 mb-2">HackerEarth Performance</h4><div className="flex items-center space-x-4"><div className="flex-1"><div className="flex justify-between text-sm mb-1"><span>Problem Solving</span><span>{student.hackerearth_score || 0}%</span></div><div className="w-full bg-gray-200 rounded-full h-2"><div className="bg-orange-500 h-2 rounded-full" style={{ width: `${student.hackerearth_score || 0}%` }} /></div></div></div></div>
