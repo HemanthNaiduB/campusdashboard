@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Student, StudentFilters } from '@/types/student';
 import { 
   MagnifyingGlassIcon,
@@ -32,6 +33,12 @@ export default function StudentFiltersComponent({ filters, onFiltersChange, stud
   const [isBasicFiltersOpen, setIsBasicFiltersOpen] = useState(true);
   const [isScoreFiltersOpen, setIsScoreFiltersOpen] = useState(false);
   const [isInterviewFiltersOpen, setIsInterviewFiltersOpen] = useState(false);
+  const [showCollegesModal, setShowCollegesModal] = useState(false);
+  const [collegeSearch, setCollegeSearch] = useState('');
+  const [tempColleges, setTempColleges] = useState<string[]>(filters.colleges || []);
+  const [isBrowser, setIsBrowser] = useState(false);
+
+  useEffect(() => { setIsBrowser(true); }, []);
 
   // Get unique values for dropdowns
   const colleges = [...new Set(students.map(s => s.college_name))].filter(Boolean).sort();
@@ -54,7 +61,7 @@ export default function StudentFiltersComponent({ filters, onFiltersChange, stud
   const clearFilters = () => {
     const clearedFilters: StudentFilters = {
       search: '',
-      college: '',
+      colleges: [],
       branch: '',
       selection_status: 'all',
       min_cgpa: null,
@@ -81,7 +88,7 @@ export default function StudentFiltersComponent({ filters, onFiltersChange, stud
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.search) count++;
-    if (filters.college) count++;
+    if (filters.colleges && filters.colleges.length > 0) count++;
     if (filters.branch) count++;
     if (filters.selection_status !== 'all') count++;
     if (filters.min_cgpa) count++;
@@ -159,19 +166,20 @@ export default function StudentFiltersComponent({ filters, onFiltersChange, stud
                   </button>
                 </div>
               )}
-              {filters.college && (
-                <div className="flex items-center space-x-1 px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+              {filters.colleges && filters.colleges.length > 0 && filters.colleges.map((c) => (
+                <div key={c} className="flex items-center space-x-1 px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
                   <AcademicCapIcon className="h-3 w-3" />
-                  <span>College: {filters.college}</span>
+                  <span>College: {c}</span>
                   <button onClick={() => {
-                    const updatedFilters = { ...filters, college: '' };
+                    const next = filters.colleges.filter(x => x !== c);
+                    const updatedFilters = { ...filters, colleges: next };
                     onFiltersChange(updatedFilters);
                     setDraftFilters(updatedFilters);
                   }}>
                     <XMarkIcon className="h-3 w-3 hover:text-green-600" />
                   </button>
                 </div>
-              )}
+              ))}
               {filters.branch && (
                 <div className="flex items-center space-x-1 px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">
                   <BookOpenIcon className="h-3 w-3" />
@@ -247,24 +255,146 @@ export default function StudentFiltersComponent({ filters, onFiltersChange, stud
                   </div>
                 </div>
 
-                {/* College */}
+                {/* Colleges (multi via modal) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    College
+                    Colleges
                   </label>
-                  <div className="relative">
-                    <AcademicCapIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <select
-                      value={draftFilters.college}
-                      onChange={(e) => handleDraftFilterChange('college', e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 appearance-none"
-                    >
-                      <option value="">All Colleges</option>
-                      {colleges.map(college => (
-                        <option key={college} value={college}>{college}</option>
-                      ))}
-                    </select>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setTempColleges(draftFilters.colleges || []); setShowCollegesModal(true); }}
+                    className="w-full inline-flex items-center justify-between px-4 py-3 border border-gray-300 rounded-xl bg-white hover:bg-gray-50 text-gray-800 shadow-sm"
+                  >
+                    <span className="flex items-center gap-2 min-w-0">
+                      <AcademicCapIcon className="h-4 w-4 text-gray-500 shrink-0" />
+                      <span className="truncate">
+                        {draftFilters.colleges && draftFilters.colleges.length > 0
+                          ? (() => {
+                              const s = draftFilters.colleges;
+                              return s.length <= 2 ? s.join(', ') : `${s[0]}, ${s[1]} +${s.length - 2}`;
+                            })()
+                          : 'All Colleges'}
+                      </span>
+                    </span>
+                    <span className="text-sm text-blue-600">Select</span>
+                  </button>
+                  {showCollegesModal && isBrowser && createPortal((
+                    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+                      <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={() => setShowCollegesModal(false)} />
+                      <div className="relative z-[81] w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto my-8 bg-white rounded-2xl shadow-2xl border border-gray-200 max-h-[85vh] flex flex-col overflow-hidden">
+                        {/* Header */}
+                        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow">
+                              <AcademicCapIcon className="h-4 w-4 text-white" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-900">Select Colleges</h3>
+                          </div>
+                          <button onClick={() => setShowCollegesModal(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+                        </div>
+
+                        {/* Search */}
+                        <div className="px-6 py-4 border-b border-gray-200">
+                          <div className="relative">
+                            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <input
+                              type="text"
+                              value={collegeSearch}
+                              onChange={(e) => setCollegeSearch(e.target.value)}
+                              placeholder="Search colleges..."
+                              className="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+
+                        {/* List */}
+                        <div className="px-6 py-4 flex-1 overflow-auto">
+                          {(() => {
+                            const visible = colleges.filter(c => c.toLowerCase().includes(collegeSearch.toLowerCase()));
+                            return (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {visible.map((college) => {
+                                  const checked = tempColleges.includes(college);
+                                  return (
+                                    <button
+                                      key={college}
+                                      type="button"
+                                      role="checkbox"
+                                      aria-checked={checked}
+                                      onClick={() => {
+                                        setTempColleges((prev) =>
+                                          prev.includes(college)
+                                            ? prev.filter((x) => x !== college)
+                                            : [...prev, college]
+                                        );
+                                      }}
+                                      className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all select-none ${checked ? 'bg-green-50 border-green-300 ring-2 ring-green-300' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
+                                    >
+                                      <span className="text-sm text-gray-800 pr-3">{college}</span>
+                                      <span className={`inline-flex items-center justify-center h-5 w-5 rounded-full border ${checked ? 'bg-green-500 border-green-500' : 'border-gray-300 bg-white'}`}>
+                                        {checked && <CheckCircleIcon className="h-5 w-5 text-white" />}
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                                {visible.length === 0 && (
+                                  <div className="text-center text-gray-500 col-span-2 py-8 text-sm">No colleges match your search.</div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm">
+                            <button
+                              onClick={() => setTempColleges([])}
+                              className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100"
+                            >
+                              Clear all
+                            </button>
+                            <button
+                              onClick={() => {
+                                const visible = colleges.filter(c => c.toLowerCase().includes(collegeSearch.toLowerCase()));
+                                setTempColleges(visible);
+                              }}
+                              className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100"
+                            >
+                              Select all visible
+                            </button>
+                            <button
+                              onClick={() => {
+                                const visible = colleges.filter(c => c.toLowerCase().includes(collegeSearch.toLowerCase()));
+                                const setVisible = new Set(visible);
+                                const toggledVisible = visible.filter(c => !tempColleges.includes(c));
+                                const keptInvisible = tempColleges.filter(c => !setVisible.has(c));
+                                setTempColleges([...keptInvisible, ...toggledVisible]);
+                              }}
+                              className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100"
+                            >
+                              Invert visible
+                            </button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => setShowCollegesModal(false)} className="px-4 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 border border-gray-200 text-sm">
+                              Cancel
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleDraftFilterChange('colleges', tempColleges);
+                                onFiltersChange({ ...draftFilters, colleges: tempColleges });
+                                setShowCollegesModal(false);
+                              }}
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                            >
+                              Apply ({tempColleges.length})
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ), document.body)}
                 </div>
 
                 {/* Branch */}

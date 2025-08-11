@@ -21,6 +21,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     try {
       await logout();
       toast.success('Logged out successfully');
+      try { localStorage.removeItem('dashboardFilters'); } catch {}
       router.push('/');
     } catch {
       toast.error('Failed to log out');

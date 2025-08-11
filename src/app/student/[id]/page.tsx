@@ -1,2 +1,5 @@
-export { default } from "@/app/student/student-temp/[id]/page";
+import StudentPageClient from './StudentPageClient';
 
+export default function Page() {
+  return <StudentPageClient />;
+}

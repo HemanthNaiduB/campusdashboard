@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Student, StudentFilters, ViewMode } from '@/types/student';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -12,6 +12,7 @@ import StudentGrid from '@/components/StudentGrid';
 import StudentTable from '@/components/StudentTable';
 
 import ExportButton from '@/components/ExportButton';
+import StudentPageClient from '@/app/student/[id]/StudentPageClient';
 import AnalyticsCharts from '@/components/AnalyticsCharts';
 import { 
   ViewColumnsIcon, 
@@ -28,14 +29,16 @@ import {
 import toast from 'react-hot-toast';
 
 export default function DashboardPage() {
-  const router = useRouter();
+  useRouter();
   
   const [students, setStudents] = useState<Student[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<StudentFilters>({
+  const [modalStudent, setModalStudent] = useState<Student | null>(null);
+
+  const defaultFilters: StudentFilters = {
     search: '',
-    college: '',
+    colleges: [],
     branch: '',
     selection_status: 'all',
     min_cgpa: null,
@@ -45,18 +48,50 @@ export default function DashboardPage() {
     interview_round: 'all',
     interview_result: 'all',
     min_interview_score: null,
+  };
+  const [filters, setFilters] = useState<StudentFilters>(() => {
+    if (typeof window === 'undefined') return defaultFilters;
+    try {
+      const raw = localStorage.getItem('dashboardFilters');
+      return raw ? { ...defaultFilters, ...JSON.parse(raw) } as StudentFilters : defaultFilters;
+    } catch {
+      return defaultFilters;
+    }
   });
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [showAnalytics, setShowAnalytics] = useState(false);
 
-  // Direct navigation to student page with data
+  // Open full-screen modal instead of routing
   const handleStudentClick = (student: Student) => {
-    // Store student data and current state for instant access and restoration
     sessionStorage.setItem('currentStudent', JSON.stringify(student));
     sessionStorage.setItem('dashboardFilters', JSON.stringify(filters));
     sessionStorage.setItem('dashboardScrollPosition', window.scrollY.toString());
-    router.push(`/student/${student.id}`);
+    setModalStudent(student);
   };
+
+  const closeStudentModal = () => {
+    sessionStorage.removeItem('currentStudent');
+    setModalStudent(null);
+  };
+
+  const refreshStudents = async () => {
+    try {
+      setLoading(true);
+      const snap = await getDocs(collection(db, 'students'));
+      const data: Student[] = [];
+      snap.forEach((d) => data.push({ id: d.id, ...d.data() } as Student));
+      setStudents(data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Persist filters to localStorage on change
+  useEffect(() => {
+    try {
+      localStorage.setItem('dashboardFilters', JSON.stringify(filters));
+    } catch {}
+  }, [filters]);
 
   // Fetch students from Firestore
   useEffect(() => {
@@ -98,8 +133,9 @@ export default function DashboardPage() {
     }
 
     // College filter
-    if (filters.college) {
-      filtered = filtered.filter(student => student.college_name && student.college_name === filters.college);
+    if (filters.colleges && filters.colleges.length > 0) {
+      const allow = new Set(filters.colleges);
+      filtered = filtered.filter(student => student.college_name && allow.has(student.college_name));
     }
 
     // Branch filter
@@ -381,7 +417,14 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="w-full sm:w-auto">
+            <div className="w-full sm:w-auto flex items-center gap-3">
+              <button
+                onClick={refreshStudents}
+                className="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium"
+                title="Refresh students"
+              >
+                Refresh
+              </button>
               <ExportButton students={filteredStudents} />
             </div>
           </div>
@@ -401,6 +444,11 @@ export default function DashboardPage() {
 
 
         </div>
+        {modalStudent && (
+          <div className="fixed inset-0 z-[60] bg-white overflow-auto">
+            <StudentPageClient initialStudent={modalStudent} onClose={closeStudentModal} />
+          </div>
+        )}
       </DashboardLayout>
     </ProtectedRoute>
   );

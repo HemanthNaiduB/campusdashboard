@@ -40,7 +40,7 @@ export interface Student {
 
 export interface StudentFilters {
   search: string;
-  college: string;
+  colleges: string[];
   branch: string;
   selection_status: 'all' | 'selected' | 'rejected' | 'pending';
   min_cgpa: number | null;
